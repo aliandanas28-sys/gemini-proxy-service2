@@ -1,14 +1,12 @@
-const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
-const app = express();
-
-app.use('/', createProxyMiddleware({
+module.exports = (req, res) => {
+  // هذا التعديل سيجعل السيرفر يوجه الطلب فوراً لـ Google Gemini
+  const proxy = createProxyMiddleware({
     target: 'https://generativelanguage.googleapis.com',
     changeOrigin: true,
-    onProxyRes: function (proxyRes, req, res) {
-        proxyRes.headers['Access-Control-Allow-Origin'] = '*';
-    }
-}));
+    pathRewrite: (path) => path, // سيمرر المسار كما هو
+  });
 
-module.exports = app;
+  return proxy(req, res);
+};
